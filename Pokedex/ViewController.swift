@@ -47,6 +47,10 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         view.endEditing(true)
     }
     
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
@@ -81,7 +85,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 pokemon.append(poke)
             }
             
-            print(rows)
+            //print(rows)
 
         } catch let err as NSError {
             print(err.debugDescription)
@@ -121,6 +125,15 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
+        let poke: Pokemon!
+        
+        if inSearchMode {
+            poke = filteredPokemon[indexPath.row]
+        } else {
+            poke = pokemon[indexPath.row]
+        }
+        
+        performSegueWithIdentifier("PokemonDetailVC", sender: poke)
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -138,6 +151,17 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         } else {
             musicPlayer.play()
             sender.alpha = 1.0
+        }
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "PokemonDetailVC" {
+            
+            if let detailsVC = segue.destinationViewController as? PokemonDetailVC {
+                if let poke = sender as? Pokemon {
+                    detailsVC.pokemon = poke
+                }
+            }
         }
     }
 }
